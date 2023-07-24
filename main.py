@@ -233,6 +233,8 @@ for ans_region in kochegar(all_addresses):
         continue
     if ans_region:
         last_ans.append(list(ans_region)[0][0].strip())
-
-for ans_region in set(last_ans):
-    print(ans_region)
+if last_ans:
+    for ans_region in set(last_ans):
+        print(ans_region)
+else:
+    print("-1")
