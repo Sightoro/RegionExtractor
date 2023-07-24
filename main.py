@@ -1,9 +1,15 @@
 # чтение входного файла с записью адресов в лист
 import re
 import sqlite3
+import argparse
 
 alphabet = 'АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ'
 
+
+parser = argparse.ArgumentParser(description='dbf file for DB')
+parser.add_argument('indir', type=str, help='Input dir for videos')
+args = parser.parse_args()
+name_of_dbf_file = args.indir
 
 # словарь с наменованиями субъектов и их полными названиями
 # для вывода в ответ
@@ -199,8 +205,8 @@ def kochegar(my_address):
             if re.fullmatch(r'\d{6}', str(elem)):
 
                 cur.execute(
-                    "SELECT region FROM PIndx01 WHERE `index` LIKE \
-                    {}".format(str("'" + str(elem)[0:3] + "___\'")))
+                    "SELECT region FROM {table} WHERE `index` LIKE \
+                    {index}".format(table=name_of_dbf_file, index=str("'" + str(elem)[0:3] + "___\'")))
                 ans = set(cur.fetchall())
                 if index_flag and ans:
                     ans = []
