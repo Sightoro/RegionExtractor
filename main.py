@@ -2,21 +2,7 @@
 import re
 import sqlite3
 
-
-def vocabulary_lib():
-    with open("input.txt", "r") as file:
-        regions_names = file.readline().split(',')
-    alphabet = 'АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ'
-    region_dict_letter = {a: [] for a in alphabet}
-
-    for name in regions_names:
-        tmp_region = name.split()
-        for tmp_word in tmp_region:
-            if tmp_word[0] in region_dict_letter.keys() \
-                    and not (name in region_dict_letter[tmp_word[0]]):
-                region_dict_letter[tmp_word[0]].append(name.strip())
-    return region_dict_letter
-region_dict_letter = vocabulary_lib()
+alphabet = 'АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ'
 
 
 # словарь с наменованиями субъектов и их полными названиями
@@ -32,12 +18,6 @@ def read_republic_txt():
     with open("republic.txt", "r") as file2:
         regions_names = [a.split(":") for a in file2.read().split("\n")]
     return regions_names
-
-
-def read_all_regions():
-    with open("input.txt", "r") as file3:
-        return file3.readline().split(',')
-
 
 
 # чтение входных данных
@@ -62,13 +42,19 @@ def close_db(cur):
 
 dict_level = read_obl_txt()
 list4levels = [["Ненецкий", "Ненецкий автономный округ"],
-               ["Ханты-Мансийский-Югра", "Ханты-Мансийский"
-                                         " автономный округ - Югра"],
+               ["Ханты", "Ханты-Мансийский"
+                         " автономный округ - Югра"],
+               ["Югра", "Ханты-Мансийский"
+                        " автономный округ - Югра"],
+               ["Мансийский", "Ханты-Мансийский"
+                              " автономный округ - Югра"],
                ["Чукотский", "Чукотский автономный округ"],
-               ["Ямало-Ненецкий", "Ямало-Ненецкий автономный округ"],
+               ["Ямало", "Ямало-Ненецкий автономный округ"],
+               ["Ненецкий", "Ямало-Ненецкий автономный округ"],
                ["Еврейская", "Еврейская автономная область"],
                ["Москва", "Москва"],
-               ["Санкт-Петербург", "Санкт-Петербург"],
+               ["Санкт", "Санкт-Петербург"],
+               ["Петербург", "Санкт-Петербург"],
                ["Севастополь", "Севастополь"],
                ["Алтайский", "Алтайский край"],
                ["Забайкальский", "Забайкальский край"],
@@ -86,68 +72,81 @@ for i in list4levels:
 
 # создание словаря, в котором ключ - первая буква,
 # а значение - название субъектаы
-alphabet = 'АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ'
 regions_dict = {a: [] for a in alphabet}
-regions = read_all_regions()
-for region in regions:
-    tmp_reg = region.split()
-    for tmp_name in tmp_reg:
-
-        if tmp_name[0] in regions_dict.keys() and not \
-                (region in regions_dict[tmp_name[0]]):
-            regions_dict[tmp_name[0]].append(region.strip())
+for region in dict_level.keys():
+    regions_dict[region[0]].append(region)
 
 
 # поиск субъектов в словаре по первой букве названия
 def search_by_first_letter(word, letter_dict,
                            arr_of_addr, dict_addr):
     ansi = []
-    for region_in_dict in \
-            letter_dict[arr_of_addr[arr_of_addr.index(word) + 1][0]]:
-        try:
-            if arr_of_addr[arr_of_addr.index(word) + 1][:-2]\
-                    in region_in_dict:
-                ansi = dict_addr[region_in_dict]
-                return ansi
-
-        except IndexError:
-            if arr_of_addr[arr_of_addr.index(word) - 1] == "Народная" \
-                    or arr_of_addr[arr_of_addr.index(word) - 1] \
-                    == "народная":
-                if arr_of_addr[arr_of_addr.index(word) - 2][:-2]\
-                        in region_in_dict:
+    if arr_of_addr[arr_of_addr.index(word) + 1][0].isupper():
+        for region_in_dict in \
+                letter_dict[
+                    arr_of_addr[arr_of_addr.index(word) + 1][0]]:
+            try:
+                if arr_of_addr[arr_of_addr.index(word) + 1][:-2] \
+                        in region_in_dict and \
+                        len(arr_of_addr[arr_of_addr.index(word) + 1][
+                            :-2]) \
+                        == len(region_in_dict) - 2:
                     ansi = dict_addr[region_in_dict]
                     return ansi
-            if arr_of_addr[arr_of_addr.index(word) - 1][:-2]\
-                    in region_in_dict:
-                ansi = dict_addr[region_in_dict]
-                return ansi
-        try:
-            if not ansi:
-                for region_in_dict in \
-                        letter_dict[arr_of_addr[arr_of_addr.index(word)
-                                                + 1][0]]:
-                    if arr_of_addr[arr_of_addr.index(word) - 1]\
-                            == "Народная" \
-                            or arr_of_addr[arr_of_addr.index(word) - 1]\
-                            == "народная":
-                        if arr_of_addr[arr_of_addr.index(word) - 2][:-2]\
-                                in region_in_dict:
-                            ansi = dict_addr[region_in_dict]
-                            return ansi
-                    if arr_of_addr[arr_of_addr.index(word) - 1][:-2]\
-                            in region_in_dict:
+
+            except IndexError:
+                if arr_of_addr[
+                    arr_of_addr.index(word) - 1] == "Народная" \
+                        or arr_of_addr[arr_of_addr.index(word) - 1] \
+                        == "народная":
+                    if arr_of_addr[arr_of_addr.index(word) - 2][:-2] \
+                            in region_in_dict and \
+                            len(arr_of_addr[
+                                    arr_of_addr.index(word) - 2][:-2]) \
+                            == len(region_in_dict) - 2:
                         ansi = dict_addr[region_in_dict]
                         return ansi
-        except IndexError:
-            break
+                if arr_of_addr[arr_of_addr.index(word) - 1][:-2] \
+                        in region_in_dict and \
+                        len(arr_of_addr[arr_of_addr.index(word) - 1][
+                            :-2]) \
+                        == len(region_in_dict) - 2:
+                    ansi = dict_addr[region_in_dict]
+                    return ansi
+    try:
+        if not ansi \
+                and arr_of_addr[arr_of_addr.index(word)
+                                - 1][0].isupper():
+            for region_in_dict in \
+                    letter_dict[arr_of_addr[arr_of_addr.index(word)
+                                            - 1][0]]:
+                if arr_of_addr[arr_of_addr.index(word) - 1] \
+                        == "Народная" \
+                        or arr_of_addr[arr_of_addr.index(word) - 1] \
+                        == "народная":
+                    if arr_of_addr[arr_of_addr.index(word) - 2][:-2] \
+                            in region_in_dict and \
+                            len(arr_of_addr[
+                                    arr_of_addr.index(word) - 2][:-2]) \
+                            == len(region_in_dict) - 2:
+                        ansi = dict_addr[region_in_dict]
+                        return ansi
+                if arr_of_addr[arr_of_addr.index(word) - 1][:-2] \
+                        in region_in_dict and \
+                        len(arr_of_addr[arr_of_addr.index(word) - 1][
+                            :-2]) \
+                        == len(region_in_dict) - 2:
+                    ansi = dict_addr[region_in_dict]
+                    return ansi
+    except IndexError or KeyError:
+        return ansi
 
 
 # функция проверяет, является ли город федерального значения
 def is_it_federal_city(word, arr_of_addr):
     cities = [["Москва", "Москва"],
-                ["Санкт-Петербург", "Санкт-Петербург"],
-                ["Севастополь", "Севастополь"]]
+              ["Санкт-Петербург", "Санкт-Петербург"],
+              ["Севастополь", "Севастополь"]]
     ansi = []
     for city in cities:
         try:
@@ -193,22 +192,34 @@ def kochegar(my_address):
     answer = []
     for full_adr in my_address:
         ans = []
+        index_flag = False
         for elem in full_adr:
             # проверяем на наличие индекса
+
             if re.fullmatch(r'\d{6}', str(elem)):
+
                 cur.execute(
                     "SELECT region FROM PIndx01 WHERE `index` LIKE \
                     {}".format(str("'" + str(elem)[0:3] + "___\'")))
                 ans = set(cur.fetchall())
+                if index_flag and ans:
+                    ans = []
+                    continue
+                index_flag = True
                 if ans:
                     break
                 else:
                     continue
             if elem in address_levels[1]:
-                ans = is_it_federal_city(elem, full_adr)
+                tmp_ans = is_it_federal_city(elem, full_adr)
+                if tmp_ans:
+                    ans = tmp_ans
+                del tmp_ans
             if not ans and elem in address_levels[0]:
-                ans = search_by_first_letter(elem, regions_dict,
+                tmp_ans = search_by_first_letter(elem, regions_dict,
                                              full_adr, dict_level)
+                if tmp_ans:
+                    ans = tmp_ans
         answer.append(ans)
     close_db(cur)
     return answer
