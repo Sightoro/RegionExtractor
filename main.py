@@ -5,11 +5,11 @@ import argparse
 
 alphabet = 'АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ'
 
-
 parser = argparse.ArgumentParser(description='dbf file for DB')
 parser.add_argument('indir', type=str, help='Input dir for videos')
 args = parser.parse_args()
 name_of_dbf_file = args.indir
+
 
 # словарь с наменованиями субъектов и их полными названиями
 # для вывода в ответ
@@ -185,15 +185,7 @@ def kochegar(my_address):
          "Республика", "респ", "республика", "рес", "регион", "Регион",
          "рег", "р",
          "округ", "окр"],
-        ["город", "г", "Город", "Г", "значения"],
-        ["пос\.", "поселение", "р-н", "район", "с\/с", "сельсовет"],
-        ["г", "город", "пгт", "рп", "кп\.", "гп\.", "п\.", "поселок",
-         "аал", "арбан", "аул", "в-ки", "выселки",
-         "г-к", "заимка", "з-ка", "починок", "п-к", "киш\.", "кишлак",
-         "п\.ст\.", "ж\/д", "м-ко", "местечко", "деревня",
-         "с\.", "село", "сл\.", "ст\.", "станция", "ст-ца", "станица",
-         "у\.", "улус", "х\.", "хутор", "рзд\.",
-         "разъезд", "зим\.", "зимовье", "д\."],
+        ["город", "г", "Город", "Г", "значения"]
     ]
     answer = []
     for full_adr in my_address:
@@ -206,7 +198,8 @@ def kochegar(my_address):
 
                 cur.execute(
                     "SELECT region FROM {table} WHERE `index` LIKE \
-                    {index}".format(table=name_of_dbf_file, index=str("'" + str(elem)[0:3] + "___\'")))
+                    {index}".format(table=name_of_dbf_file, index=str(
+                        "'" + str(elem)[0:3] + "___\'")))
                 ans = set(cur.fetchall())
                 if index_flag and ans:
                     ans = []
@@ -223,7 +216,7 @@ def kochegar(my_address):
                 del tmp_ans
             if not ans and elem in address_levels[0]:
                 tmp_ans = search_by_first_letter(elem, regions_dict,
-                                             full_adr, dict_level)
+                                                 full_adr, dict_level)
                 if tmp_ans:
                     ans = tmp_ans
         answer.append(ans)

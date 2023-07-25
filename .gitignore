@@ -2,4 +2,4 @@ venv
 .idea
 addresses_database.db
 mypoligon.py
-PIndx01.dbf
+*.dbf

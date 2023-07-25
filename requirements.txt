@@ -1,0 +1,14 @@
+aenum==3.1.15
+click==8.1.6
+click-default-group-wheel==1.2.2
+dbf==0.97.11
+dbf-to-sqlite==0.1
+pip==21.1.2
+pluggy==1.2.0
+python-dateutil==2.8.2
+setuptools==57.0.0
+six==1.16.0
+sqlite-fts4==1.0.3
+sqlite-utils==3.34
+tabulate==0.9.0
+wheel==0.36.2
